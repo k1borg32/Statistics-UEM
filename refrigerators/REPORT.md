@@ -97,7 +97,22 @@ The typical modern ENERGY STAR unit beats the current U.S. federal minimum
 by ~13 %, with a concentrated distribution around the certification
 threshold (10 %).
 
-### 3.2 Historical perspective (AHAM / DOE)
+### 3.2 Capacity and product-mix (additional univariate)
+
+* **Fig. 8 — Histogram of Capacity (modern cohort).**
+  ![Fig 8](figures/fig8_hist_capacity.png)
+  A clearly bimodal distribution: a large cluster of compact/beverage units
+  around 4-5 ft³ and a second cluster of full-size cabinets around
+  18-22 ft³. This bimodality explains the mild negative excess kurtosis of
+  Annual Energy (platykurtic shape).
+
+* **Fig. 9 — Bar chart of Refrigerator Type (modern cohort).**
+  ![Fig 9](figures/fig9_bar_type.png)
+  Bottom-Freezer (n = 961) and Compact Refrigerator (n = 800) dominate the
+  current ENERGY STAR catalogue; Top-Freezer (481) is the classic North-
+  American design; Side-by-Side is now rare (47 models).
+
+### 3.3 Historical perspective (AHAM / DOE)
 
 | Year | Avg. kWh/yr (new fridges) |
 |------|---------------------------:|
@@ -136,6 +151,19 @@ Correlation matrix (Pearson r):
 
 Covariance (Energy, Capacity) = **1 164.5 kWh·ft³**.
 
+**Spearman correlation matrix (robustness check, same variables):**
+
+| | Energy | Capacity | Adj. Volume | Fed. Std. | % Less |
+|-|-------:|---------:|------------:|----------:|-------:|
+| **Energy** | 1.000 | 0.852 | 0.896 | **0.987** | −0.460 |
+| **Capacity** | 0.852 | 1.000 | — | 0.847 | −0.383 |
+| **Adj. Volume** | 0.896 | — | 1.000 | 0.880 | −0.386 |
+| **Federal Std.** | 0.987 | 0.847 | 0.880 | 1.000 | −0.372 |
+| **% Less Energy** | −0.460 | −0.383 | −0.386 | −0.372 | 1.000 |
+
+Spearman and Pearson agree in sign and order of magnitude for every pair,
+so the relationships are monotone and not driven by outliers.
+
 **Interpretation.**
 * Energy use scales almost linearly with the federal standard for the unit's
   class (r ≈ 0.99) — essentially every manufacturer hugs the regulatory
@@ -146,6 +174,17 @@ Covariance (Energy, Capacity) = **1 164.5 kWh·ft³**.
   correlated with size (r = −0.27): compact units tend to beat the standard
   by a larger relative amount, whereas large French-door units operate
   close to the regulatory floor.
+
+### 4.2 Capacity × Energy broken down by Type
+
+* **Fig. 10 — Scatter of Capacity vs Energy coloured by Refrigerator Type.**
+  ![Fig 10](figures/fig10_scatter_type.png)
+  The bimodal cloud of Fig. 3 resolves into clean per-type clusters:
+  Compact Refrigerators occupy the low-left corner (≈ 4 ft³, ≈ 260 kWh/yr),
+  Top-Freezers and Freezerless units occupy the middle band, and
+  Bottom-Freezer / Side-by-Side dominate the upper-right (≈ 22 ft³,
+  ≈ 560-600 kWh/yr). Within each type the Energy–Capacity slope is nearly
+  identical, confirming that *type* is essentially a shift of the intercept.
 
 ### 4.2 Energy vs. Capacity — linear regression
 
@@ -250,7 +289,47 @@ $/year if applied to the U.S. installed base of ~150 million refrigerators.
 
 ---
 
-## 7. Overall Conclusions
+## 7. Additional Hypothesis Test — Energy by Refrigerator Type
+
+To understand whether *design* (beyond size) drives energy use, we test
+whether annual energy use differs across refrigerator types in the modern
+cohort, and specifically compare **Bottom-Freezer vs Top-Freezer** (the two
+most common full-size designs).
+
+### 7.1 One-way ANOVA across 7 types (modern, n = 2 598)
+
+| Type | n | Mean (kWh/yr) | SD |
+|------|--:|--------------:|----:|
+| Side-by-Side | 47 | **600.8** | 110.0 |
+| Bottom Freezer | 961 | **558.0** | 114.1 |
+| Top Freezer | 481 | 362.0 | 50.4 |
+| Freezerless / Single Door | 198 | 280.2 | 42.3 |
+| Compact Refrigerator | 800 | 260.6 | 51.3 |
+| Cooler | 24 | 156.5 | 20.8 |
+| Compact Cooler | 87 | 130.3 | 26.2 |
+
+**ANOVA:** F = **1 350.9**, p ≈ 0 (≪ 10⁻³⁰⁰) → reject equality of means.
+
+### 7.2 Bottom-Freezer vs Top-Freezer (Welch's t)
+
+* $H_0:\ \mu_{\text{BF}} = \mu_{\text{TF}}$
+* $H_1:\ \mu_{\text{BF}} > \mu_{\text{TF}}$ (two-sided equivalent also reported)
+
+Mean difference ≈ **+196 kWh/yr** (Bottom-Freezer higher), t ≫ 30, p ≈ 0.
+The Bottom-Freezer design — now the most numerous on the market — consumes
+on average 54 % more energy than an equivalently-classified Top-Freezer,
+largely because it tends to be bigger and to include ice-makers and
+through-the-door dispensers.
+
+**Practical reading.** Over the last decade the market has shifted from
+Top-Freezers to Bottom-Freezers (which use more energy). That head-wind
+makes the observed *decrease* in the overall mean between 2014-2017 and
+2023-2026 (Section 6) even more remarkable: the technology is improving
+fast enough to beat an adverse product-mix shift.
+
+---
+
+## 8. Overall Conclusions
 
 1. **The hypothesis "modern appliances consume less energy than older ones"
    is supported by the data at every time scale examined.**
@@ -273,7 +352,7 @@ $/year if applied to the U.S. installed base of ~150 million refrigerators.
 
 ---
 
-## 8. Limitations
+## 9. Limitations
 
 * Dataset (1) only covers **ENERGY STAR certified** products and U.S. /
   Canada markets — the true non-certified population (still sold and widely
@@ -286,7 +365,7 @@ $/year if applied to the U.S. installed base of ~150 million refrigerators.
   aggregate means; individual-level variance for 1981 stock is not
   publicly available.
 
-## 9. References
+## 10. References
 
 1. U.S. EPA — ENERGY STAR Certified Residential Refrigerators dataset.
    https://catalog.data.gov/dataset/energy-star-certified-residential-refrigerators

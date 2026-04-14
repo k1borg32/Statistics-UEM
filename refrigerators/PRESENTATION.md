@@ -39,22 +39,29 @@ Insert **Fig. 5** — from 2 000 kWh (1972) → ~390 kWh (2025).
 
 ---
 
-### Slide 6 — Bivariate view
-* Correlation Energy ↔ Capacity = 0.86.
-* Regression: Energy = 162 + 16.8 × Capacity (R² = 0.73).
-* Manufacturers cluster 10 % under the federal standard.
-Insert **Fig. 3 (scatter)**.
+### Slide 6 — Product mix (additional univariate)
+* Bimodal capacity distribution (compact ≈5 ft³ + full-size ≈20 ft³).
+* Bottom-Freezer (961) and Compact (800) dominate modern certifications.
+Insert **Fig. 8 (capacity histogram)** + **Fig. 9 (type bar chart)**.
 
 ---
 
-### Slide 7 — Statistical Inference
+### Slide 7 — Bivariate view
+* Pearson r (Energy, Capacity) = 0.86 — Spearman = 0.85 (robust).
+* Regression: Energy = 162 + 16.8 × Capacity (R² = 0.73).
+* Each type forms its own cluster — see **Fig. 10 (scatter by Type)**.
+Insert **Fig. 3 (scatter)** + **Fig. 10**.
+
+---
+
+### Slide 8 — Statistical Inference
 95 % CI for modern-fridge mean: **[384, 396] kWh/yr**.
 Versus the 1981 AHAM baseline of 1 278 kWh → one-sample t = −278, p ≈ 0.
 ⇒ Modern units are **69.5 % below the 1981 population mean**.
 
 ---
 
-### Slide 8 — Hypothesis Test (old vs modern cohort)
+### Slide 9 — Hypothesis Test (old vs modern cohort)
 H₀: µ_old ≤ µ_modern · H₁: µ_old > µ_modern · α = 0.05
 Welch's t (one-sided): **t = 4.86, p = 7.5 × 10⁻⁷**
 Diff = 42.4 kWh/yr, 95 % CI [25, 60]; Mann-Whitney confirms (p = 10⁻⁵).
@@ -62,7 +69,14 @@ Diff = 42.4 kWh/yr, 95 % CI [25, 60]; Mann-Whitney confirms (p = 10⁻⁵).
 
 ---
 
-### Slide 9 — Conclusions
+### Slide 10 — Secondary tests
+* **ANOVA across 7 types**: F = 1 351, p ≈ 0 — design matters enormously.
+* **Bottom-Freezer vs Top-Freezer** (Welch): 558 vs 362 kWh/yr, t = 45, p ≈ 10⁻²⁷⁷.
+* Modern mix trends *toward* more energy-hungry Bottom-Freezers, yet total mean still fell → tech progress is beating an adverse product-mix.
+
+---
+
+### Slide 11 — Conclusions
 1. Modern fridges **really do** consume significantly less energy.
 2. −70 % vs 1981, −10 % vs 2014-2017, with *higher* capacity.
 3. ~42 kWh/yr × 150 M U.S. fridges ≈ 6.3 TWh/yr saved per decade.
@@ -70,5 +84,5 @@ Diff = 42.4 kWh/yr, 95 % CI [25, 60]; Mann-Whitney confirms (p = 10⁻⁵).
 
 ---
 
-### Slide 10 — Q&A
+### Slide 12 — Q&A
 *Thank you.*

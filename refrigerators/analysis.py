@@ -109,6 +109,9 @@ m_num = modern[["Annual Energy Use (kWh/yr)",
 print("\nPearson correlation matrix (modern cohort):")
 print(m_num.corr().round(3))
 
+print("\nSpearman correlation matrix (modern cohort):")
+print(m_num.corr(method="spearman").round(3))
+
 cov_ec = np.cov(m_num["Annual Energy Use (kWh/yr)"],
                 m_num["Capacity (Total Volume) (ft3)"])[0, 1]
 print(f"\nCov(Energy, Capacity) = {cov_ec:.2f}")
@@ -250,5 +253,62 @@ ax.set(xlabel="% less energy than U.S. Federal Standard",
        title="Fig.7 — Efficiency margin of modern fridges")
 ax.legend(); plt.tight_layout()
 plt.savefig(f"{FIG_DIR}/fig7_pctless.png"); plt.close()
+
+# Fig 8 — Capacity histogram (modern)
+fig, ax = plt.subplots(figsize=(7, 4.2))
+ax.hist(modern["Capacity (Total Volume) (ft3)"].dropna(), bins=30,
+        color="#81B29A", edgecolor="white")
+ax.set(xlabel="Capacity (ft³)", ylabel="Frequency",
+       title="Fig.8 — Capacity distribution (modern ENERGY STAR fridges)")
+plt.tight_layout(); plt.savefig(f"{FIG_DIR}/fig8_hist_capacity.png"); plt.close()
+
+# Fig 9 — Bar chart of Type (modern)
+cnt = modern["Type"].value_counts()
+fig, ax = plt.subplots(figsize=(8, 4.2))
+colors = ["#2E86AB", "#E07A5F", "#81B29A", "#6A994E",
+          "#3D405B", "#F2CC8F", "#9E2A2B", "#BDB2FF"]
+ax.bar(range(len(cnt)), cnt.values, color=colors[:len(cnt)])
+ax.set_xticks(range(len(cnt)))
+ax.set_xticklabels(cnt.index, rotation=25, ha="right", fontsize=8)
+for i, v in enumerate(cnt.values):
+    ax.text(i, v + 8, str(v), ha="center", fontsize=8)
+ax.set(ylabel="Number of models",
+       title="Fig.9 — Refrigerator Types (modern cohort)")
+plt.tight_layout(); plt.savefig(f"{FIG_DIR}/fig9_bar_type.png"); plt.close()
+
+# Fig 10 — Scatter Capacity vs Energy coloured by Type (modern)
+major_types = ["Bottom Freezer", "Top Freezer", "Side-by-Side",
+               "Compact Refrigerator", "Freezerless and Single Door"]
+palette = {"Bottom Freezer": "#2E86AB", "Top Freezer": "#E07A5F",
+           "Side-by-Side": "#9E2A2B", "Compact Refrigerator": "#81B29A",
+           "Freezerless and Single Door": "#F2CC8F"}
+fig, ax = plt.subplots(figsize=(8, 5))
+for tp in major_types:
+    sub = modern[modern["Type"] == tp]
+    ax.scatter(sub["Capacity (Total Volume) (ft3)"],
+               sub["Annual Energy Use (kWh/yr)"],
+               alpha=0.45, s=16, color=palette[tp],
+               label=f"{tp} (n={len(sub)})")
+ax.set(xlabel="Capacity (ft³)", ylabel="Annual Energy Use (kWh/yr)",
+       title="Fig.10 — Capacity vs Energy by Type (modern)")
+ax.legend(fontsize=8, loc="upper left")
+plt.tight_layout(); plt.savefig(f"{FIG_DIR}/fig10_scatter_type.png"); plt.close()
+
+# Secondary hypothesis tests
+print("\n--- Secondary test: ANOVA Annual Energy by Type (modern) ---")
+groups = [g["Annual Energy Use (kWh/yr)"].values
+          for _, g in modern.groupby("Type") if len(g) >= 20]
+names = [n for n, g in modern.groupby("Type") if len(g) >= 20]
+f_stat, p_anova = stats.f_oneway(*groups)
+print(f"F = {f_stat:.2f}, p = {p_anova:.3e}")
+for n, g in zip(names, groups):
+    print(f"  {n}: n={len(g)}, mean={g.mean():.1f}, sd={g.std(ddof=1):.1f}")
+
+print("\n--- Secondary test: Bottom-Freezer vs Top-Freezer (Welch) ---")
+bf = modern[modern["Type"] == "Bottom Freezer"]["Annual Energy Use (kWh/yr)"]
+tf = modern[modern["Type"] == "Top Freezer"]["Annual Energy Use (kWh/yr)"]
+t_bt, p_bt = stats.ttest_ind(bf, tf, equal_var=False, alternative="greater")
+print(f"  BF n={len(bf)} mean={bf.mean():.1f}, TF n={len(tf)} mean={tf.mean():.1f}")
+print(f"  Welch t={t_bt:.2f}, one-sided p={p_bt:.3e}")
 
 print("\nAll figures written to", FIG_DIR)
