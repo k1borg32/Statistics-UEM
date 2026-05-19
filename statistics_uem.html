@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="slides-format" content="viewport">
+    <title>Energy Consumption: Old vs Modern Appliances — Group 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-bg: #0d1b2a;
+            --color-bg-deep: #060e18;
+            --color-surface: #132033;
+            --color-text: #e8f1fa;
+            --color-text-secondary: #a8c0d6;
+            --color-text-muted: #6a8fa8;
+            --color-accent-1: #38bdf8;
+            --color-accent-2: #34d399;
+            --color-accent-3: #fbbf24;
+            --color-glass-bg: rgba(255,255,255,0.05);
+            --color-glass-border: rgba(255,255,255,0.09);
+            --color-vignette: rgba(0,0,0,0.45);
+            --font-display: 'DM Serif Display', serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+    </style>
+    <style>
+        :root {
+            --color-bg: #0d1b2a;
+            --color-text: #e8f1fa;
+            --glow-color-rgb: 56,189,248;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { background: var(--color-bg); margin: 0; }
+        body { font-family: 'DM Sans', sans-serif; color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+        .deck { width: 100vw; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.96); transition: opacity 0.7s ease, transform 0.7s ease; pointer-events: none; overflow: hidden; }
+        .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
+        .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1100px; padding: clamp(1.5rem, 3.5vw, 3.5rem); }
+        .nav-controls { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; z-index: 100; background: rgba(13,27,42,0.8); backdrop-filter: blur(16px); padding: 8px 22px; border-radius: 40px; border: 1px solid rgba(56,189,248,0.15); }
+        .nav-btn { width: 38px; height: 38px; border: none; background: rgba(56,189,248,0.1); color: #38bdf8; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+        .nav-btn:hover { background: rgba(56,189,248,0.2); }
+        .slide-dots { display: flex; gap: 7px; }
+        .slide-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(56,189,248,0.2); cursor: pointer; transition: background 0.3s, transform 0.3s; }
+        .slide-dots .dot.active { background: #38bdf8; transform: scale(1.35); }
+        .slide-counter { font-size: 0.75rem; color: #6a8fa8; min-width: 38px; text-align: center; }
+        .reveal { opacity: 0; transform: translateY(18px); }
+        .text-glow { text-shadow: 0 0 20px rgba(56,189,248,0.5), 0 0 40px rgba(56,189,248,0.2); }
+        .stat-glow { text-shadow: 0 0 28px rgba(56,189,248,0.6), 0 0 56px rgba(56,189,248,0.25); }
+        .green-glow { text-shadow: 0 0 28px rgba(52,211,153,0.7), 0 0 56px rgba(52,211,153,0.3); }
+        .gold-glow { text-shadow: 0 0 28px rgba(251,191,36,0.7), 0 0 56px rgba(251,191,36,0.3); }
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(56,189,248,0.5), 0 0 40px rgba(56,189,248,0.2); }
+            50% { text-shadow: 0 0 36px rgba(56,189,248,0.9), 0 0 72px rgba(56,189,248,0.4); }
+        }
+        .glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+        @keyframes float-slow { 0%{transform:translate(0,0) scale(1);} 25%{transform:translate(60px,-50px) scale(1.12);} 50%{transform:translate(-40px,40px) scale(0.9);} 75%{transform:translate(50px,20px) scale(1.08);} 100%{transform:translate(0,0) scale(1);} }
+        @keyframes float-drift { 0%{transform:translate(0,0) scale(1) rotate(0deg);} 33%{transform:translate(-50px,-60px) scale(1.15) rotate(3deg);} 66%{transform:translate(40px,30px) scale(0.88) rotate(-2deg);} 100%{transform:translate(0,0) scale(1) rotate(0deg);} }
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);} }
+        .gradient-mesh { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); animation: float-slow 10s ease-in-out infinite; }
+        .blob:nth-child(2) { animation: float-drift 14s ease-in-out infinite; }
+        .blob:nth-child(3) { animation: float-slow 18s ease-in-out infinite reverse; }
+        .blob:nth-child(4) { animation: float-drift 22s ease-in-out infinite reverse; }
+        .slide::before { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); background-repeat:repeat; background-size:256px; opacity:0.03; mix-blend-mode:overlay; }
+        .slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 50%, var(--color-vignette) 100%); }
+        .bar-track { background: rgba(255,255,255,0.06); border-radius: 6px; height: 28px; overflow: hidden; width: 100%; }
+        .bar-fill { height: 100%; border-radius: 6px; width: 0%; transition: width 0.7s ease; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } }
+
+        /* === SLIDE-SPECIFIC === */
+        .chip { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+        .chip-blue { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+        .chip-green { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+        .chip-gold { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+        .corr-cell { padding: 0.45rem 0.7rem; text-align: center; font-size: 0.78rem; font-weight: 600; border-radius: 6px; }
+        .divider-line { width: 60px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #38bdf8, #34d399); margin: 0.75rem 0 1.1rem; }
+        .big-stat { font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 800; line-height: 1; }
+        .timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 12px rgba(56,189,248,0.7); flex-shrink: 0; margin-top: 4px; }
+        .timeline-line { position: absolute; left: 6px; top: 18px; bottom: 0; width: 2px; background: linear-gradient(to bottom, #38bdf8, rgba(56,189,248,0.1)); }
+    </style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+
+<div class="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<div class="slide active" data-slide="1">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:520px;height:520px;top:-120px;right:-120px;background:#38bdf8;opacity:0.13;"></div>
+        <div class="blob" style="width:340px;height:340px;bottom:-90px;left:-70px;background:#34d399;opacity:0.11;"></div>
+        <div class="blob" style="width:220px;height:220px;top:45%;left:12%;background:#fbbf24;opacity:0.08;"></div>
+        <div class="blob" style="width:180px;height:180px;top:20%;left:40%;background:#818cf8;opacity:0.07;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content text-center">
+        <div style="font-size:80px;margin-bottom:1rem;animation:float 3s ease-in-out infinite;" class="reveal">⚡</div>
+        <h1 class="font-display text-[clamp(2.2rem,5.5vw,4.2rem)] font-black bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent tracking-tight mb-4 reveal">Energy Consumption<br>Old vs. Modern Appliances</h1>
+        <p class="text-[clamp(0.85rem,1.4vw,1.1rem)] font-light text-text-muted tracking-[5px] uppercase reveal mb-6">Applied Statistics · Group 1 · Universidad Europea · 2026</p>
+        <p class="text-[clamp(0.8rem,1.2vw,1rem)] text-text-secondary reveal" style="font-style:italic;">"Modern appliances consume less energy than older ones."</p>
+        <div class="flex gap-3 justify-center mt-6 reveal">
+            <span class="chip chip-blue">Clothes Washers — 351 models</span>
+            <span class="chip chip-green">Refrigerators — 4 591 models</span>
+            <span class="chip chip-gold">EPA ENERGY STAR</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 2: AGENDA ===== -->
+<div class="slide" data-slide="2">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:320px;height:320px;top:-60px;right:-60px;background:#38bdf8;opacity:0.07;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-40px;background:#34d399;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-blue mb-3">Outline</span></div>
+        <h2 class="font-display text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold mb-2 reveal">What We'll Cover</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.1rem 1.4rem;">
+                <div style="font-size:1.6rem;margin-bottom:0.4rem;">🔍</div>
+                <div style="font-weight:700;font-size:0.95rem;color:#38bdf8;margin-bottom:0.3rem;">1. Motivation & Data</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Two case studies, EPA open data, variables, and cohort definitions</div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.1rem 1.4rem;">
+                <div style="font-size:1.6rem;margin-bottom:0.4rem;">📊</div>
+                <div style="font-weight:700;font-size:0.95rem;color:#34d399;margin-bottom:0.3rem;">2. Univariate Statistics</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Distributions, central tendency, dispersion, skewness by era</div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.1rem 1.4rem;">
+                <div style="font-size:1.6rem;margin-bottom:0.4rem;">🔗</div>
+                <div style="font-weight:700;font-size:0.95rem;color:#fbbf24;margin-bottom:0.3rem;">3. Bivariate Statistics</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Correlations, scatter plots, capacity–energy, IMEF–energy</div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.1rem 1.4rem;">
+                <div style="font-size:1.6rem;margin-bottom:0.4rem;">🧪</div>
+                <div style="font-weight:700;font-size:0.95rem;color:#c084fc;margin-bottom:0.3rem;">4. Hypothesis Testing</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Welch's t-test, Mann-Whitney, ANOVA, effect sizes</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 3: MOTIVATION ===== -->
+<div class="slide" data-slide="3">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:350px;height:350px;top:-80px;right:-80px;background:#38bdf8;opacity:0.08;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#fbbf24;opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-gold mb-3">Why It Matters</span></div>
+        <h2 class="font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold mb-2 reveal">Why Study Appliance Energy?</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-3 gap-4 mt-4">
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.2rem;">
+                <div style="font-size:2rem;margin-bottom:0.5rem;">🧊</div>
+                <div style="font-weight:700;color:#38bdf8;margin-bottom:0.35rem;">Refrigerators Run 24/7</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Single largest residential electricity load — never switch off, account for ~14% of home electricity use</div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.2rem;">
+                <div style="font-size:2rem;margin-bottom:0.5rem;">👕</div>
+                <div style="font-weight:700;color:#34d399;margin-bottom:0.35rem;">Washers × Hot Water</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">Top-5 household consumers — draw both electricity AND heat energy; IMEF standards promise savings</div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.2rem;">
+                <div style="font-size:2rem;margin-bottom:0.5rem;">📜</div>
+                <div style="font-weight:700;color:#fbbf24;margin-bottom:0.35rem;">Decades of Standards</div>
+                <div style="font-size:0.82rem;color:#a8c0d6;">U.S. NAECA, EU A–G label, ENERGY STAR — do they deliver real savings or just on paper?</div>
+            </div>
+        </div>
+        <div class="reveal mt-5" style="background:linear-gradient(135deg,rgba(56,189,248,0.08),rgba(52,211,153,0.08));border:1px solid rgba(56,189,248,0.15);border-radius:12px;padding:1rem 1.4rem;">
+            <p style="font-size:0.9rem;color:#e8f1fa;line-height:1.6;"><strong style="color:#38bdf8;">Core question:</strong> Using the official EPA ENERGY STAR registry, can we statistically prove that modern certified appliances consume significantly less energy than older certified models?</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 4: DATASETS ===== -->
+<div class="slide" data-slide="4">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:330px;height:330px;top:-70px;right:-70px;background:#34d399;opacity:0.07;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-40px;background:#38bdf8;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-green mb-3">Open Data</span></div>
+        <h2 class="font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold mb-2 reveal">Datasets & Variables</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-2 gap-5 mt-3">
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(56,189,248,0.2);border-radius:14px;padding:1.2rem 1.4rem;">
+                <div class="flex items-center gap-2 mb-2">
+                    <span style="font-size:1.4rem;">👕</span>
+                    <span style="font-weight:700;color:#38bdf8;">Clothes Washers</span>
+                </div>
+                <div style="font-size:0.8rem;color:#6a8fa8;margin-bottom:0.7rem;">EPA ENERGY STAR · bghd-e2wd · 2014–2026</div>
+                <ul style="font-size:0.82rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.8;">
+                    <li>📦 361 raw → <strong style="color:#38bdf8;">351 cleaned</strong> rows</li>
+                    <li>⚡ Annual Energy Use (kWh/yr)</li>
+                    <li>📐 Volume (ft³) · Load Config (F/T)</li>
+                    <li>🔬 IMEF · IWF · Annual Water Use</li>
+                    <li>📅 Date Available On Market</li>
+                </ul>
+                <div class="flex gap-2 mt-3">
+                    <span class="chip chip-blue">Older ≤2017 → n=40</span>
+                    <span class="chip chip-green">Modern ≥2022 → n=171</span>
+                </div>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(52,211,153,0.2);border-radius:14px;padding:1.2rem 1.4rem;">
+                <div class="flex items-center gap-2 mb-2">
+                    <span style="font-size:1.4rem;">🧊</span>
+                    <span style="font-weight:700;color:#34d399;">Refrigerators</span>
+                </div>
+                <div style="font-size:0.8rem;color:#6a8fa8;margin-bottom:0.7rem;">EPA ENERGY STAR · p5st-her9 · 2014–2026</div>
+                <ul style="font-size:0.82rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.8;">
+                    <li>📦 <strong style="color:#34d399;">4 591 models</strong> certified</li>
+                    <li>⚡ Annual Energy Use (kWh/yr)</li>
+                    <li>📐 Adjusted Volume (ft³) · Type</li>
+                    <li>📊 Standard Baseline · % vs baseline</li>
+                    <li>📅 Date Available On Market</li>
+                </ul>
+                <div class="flex gap-2 mt-3">
+                    <span class="chip chip-blue">Older 2014–17 → n=464</span>
+                    <span class="chip chip-green">Modern 2023–26 → n=2621</span>
+                </div>
+            </div>
+        </div>
+        <p class="reveal mt-4" style="font-size:0.78rem;color:#6a8fa8;text-align:center;">Mid-period years excluded from hypothesis testing to avoid era overlap · Full dataset used for regression and trend analysis</p>
+    </div>
+</div>
+
+<!-- ===== SLIDE 5: UNIVARIATE WASHERS ===== -->
+<div class="slide" data-slide="5">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:300px;height:300px;top:-60px;right:-60px;background:#38bdf8;opacity:0.07;"></div>
+        <div class="blob" style="width:220px;height:220px;bottom:-50px;left:-30px;background:#34d399;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-blue mb-3">Clothes Washers · Univariate</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 reveal">Energy Use Distribution — Washers</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-4 gap-3 mt-3 mb-4">
+            <div class="reveal" style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat stat-glow" style="color:#38bdf8;" data-count="122">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Mean kWh/yr</div>
+            </div>
+            <div class="reveal" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat green-glow" style="color:#34d399;" data-count="110">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Median kWh/yr</div>
+            </div>
+            <div class="reveal" style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat gold-glow" style="color:#fbbf24;" data-count="41">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Std Dev</div>
+            </div>
+            <div class="reveal" style="background:rgba(192,132,252,0.07);border:1px solid rgba(192,132,252,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat" style="color:#c084fc;font-size:2.4rem;" >1.6</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Skewness</div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="reveal" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem 1.2rem;">
+                <div style="font-size:0.8rem;font-weight:600;color:#38bdf8;margin-bottom:0.7rem;">⚡ Older (≤2017) vs Modern (≥2022)</div>
+                <div class="flex flex-col gap-2">
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>Older mean: 123.5 kWh/yr</span><span>n=40</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="79" style="background:linear-gradient(90deg,#f87171,#fb923c);"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>Modern mean: 112.7 kWh/yr</span><span>n=171</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="72" style="background:linear-gradient(90deg,#38bdf8,#34d399);"></div></div>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem;color:#6a8fa8;margin-top:0.6rem;">Mean difference: −10.8 kWh/yr (−9%)</p>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem 1.2rem;">
+                <div style="font-size:0.8rem;font-weight:600;color:#34d399;margin-bottom:0.7rem;">🔄 Load Configuration Mix</div>
+                <div class="flex flex-col gap-2">
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>Front-load (66%) — 104 kWh/yr avg</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="66" style="background:linear-gradient(90deg,#34d399,#38bdf8);"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>Top-load (34%) — 157 kWh/yr avg</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="34" style="background:linear-gradient(90deg,#fbbf24,#f87171);"></div></div>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem;color:#6a8fa8;margin-top:0.6rem;">Right-skewed distribution: a few highly-consuming outliers pull mean above median</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 6: UNIVARIATE FRIDGES ===== -->
+<div class="slide" data-slide="6">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:310px;height:310px;top:-70px;right:-70px;background:#34d399;opacity:0.08;"></div>
+        <div class="blob" style="width:220px;height:220px;bottom:-50px;left:-40px;background:#38bdf8;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-green mb-3">Refrigerators · Univariate</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 reveal">Energy Use Distribution — Fridges</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-4 gap-3 mt-3 mb-4">
+            <div class="reveal" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat green-glow" style="color:#34d399;" data-count="390">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Modern Mean</div>
+            </div>
+            <div class="reveal" style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat" style="color:#f87171;font-size:clamp(2rem,4vw,3.4rem);" data-count="433">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Older Mean</div>
+            </div>
+            <div class="reveal" style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat gold-glow" style="color:#fbbf24;" data-count="164">0</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Modern SD</div>
+            </div>
+            <div class="reveal" style="background:rgba(192,132,252,0.07);border:1px solid rgba(192,132,252,0.18);border-radius:12px;padding:0.9rem;text-align:center;">
+                <div class="big-stat" style="color:#c084fc;font-size:2.4rem;">+1.8</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Skewness</div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="reveal" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem 1.2rem;">
+                <div style="font-size:0.8rem;font-weight:600;color:#34d399;margin-bottom:0.7rem;">🧊 Distribution Notes</div>
+                <ul style="font-size:0.81rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.8;">
+                    <li>• Bimodal capacity: compact ≈5 ft³ + full-size ≈20 ft³</li>
+                    <li>• Right-skewed: large Bottom-Freezer units pull mean up</li>
+                    <li>• Modern median: 347 kWh/yr vs older median: 398 kWh/yr</li>
+                    <li>• Wider IQR in modern cohort due to product-type diversity</li>
+                </ul>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem 1.2rem;">
+                <div style="font-size:0.8rem;font-weight:600;color:#fbbf24;margin-bottom:0.7rem;">🏆 The 50-Year Story (AHAM baseline)</div>
+                <div class="flex flex-col gap-2">
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>1972 avg: ~2 000 kWh/yr</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="100" style="background:linear-gradient(90deg,#f87171,#fbbf24);"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>1981 AHAM baseline: 1 278 kWh/yr</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="64" style="background:linear-gradient(90deg,#fbbf24,#fb923c);"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1" style="font-size:0.75rem;color:#a8c0d6;"><span>2025 modern: ~390 kWh/yr</span></div>
+                        <div class="bar-track"><div class="bar-fill" data-width="19.5" style="background:linear-gradient(90deg,#38bdf8,#34d399);"></div></div>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem;color:#6a8fa8;margin-top:0.5rem;">−80% reduction in 50 years while capacity grew ~20%</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 7: BIVARIATE ===== -->
+<div class="slide" data-slide="7">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:320px;height:320px;top:-70px;right:-70px;background:#fbbf24;opacity:0.07;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-40px;background:#38bdf8;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-gold mb-3">Bivariate Statistics</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 reveal">Correlations & Relationships</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-2 gap-5 mt-3">
+            <div class="reveal">
+                <div style="font-size:0.82rem;font-weight:600;color:#38bdf8;margin-bottom:0.7rem;">👕 Washers — Pearson r</div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:0.7rem;">
+                    <div class="grid grid-cols-3 gap-1 text-center" style="font-size:0.7rem;">
+                        <div></div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">Water Use</div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">IMEF</div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">Energy</div>
+                        <div class="corr-cell" style="background:rgba(251,191,36,0.2);color:#fbbf24;">+0.67</div>
+                        <div class="corr-cell" style="background:rgba(248,113,113,0.2);color:#f87171;">−0.48</div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">Volume</div>
+                        <div class="corr-cell" style="background:rgba(96,165,250,0.2);color:#60a5fa;">+0.41</div>
+                        <div class="corr-cell" style="background:rgba(100,116,139,0.15);color:#94a3b8;">+0.05</div>
+                    </div>
+                </div>
+                <ul style="font-size:0.79rem;color:#a8c0d6;list-style:none;padding:0;margin-top:0.7rem;line-height:1.75;">
+                    <li>💧 Energy ↔ Water Use: <strong style="color:#fbbf24;">r = +0.67</strong> (strong positive)</li>
+                    <li>🔬 Energy ↔ IMEF: <strong style="color:#f87171;">r = −0.48</strong> (mod. negative)</li>
+                    <li>📐 Energy ↔ Volume: <strong style="color:#60a5fa;">r = +0.41</strong> (mod. positive)</li>
+                </ul>
+            </div>
+            <div class="reveal">
+                <div style="font-size:0.82rem;font-weight:600;color:#34d399;margin-bottom:0.7rem;">🧊 Refrigerators — Pearson r</div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:0.7rem;">
+                    <div class="grid grid-cols-2 gap-1 text-center" style="font-size:0.7rem;">
+                        <div></div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">Capacity (ft³)</div>
+                        <div style="color:#6a8fa8;padding:0.3rem;font-weight:600;">Energy (kWh/yr)</div>
+                        <div class="corr-cell" style="background:rgba(251,191,36,0.25);color:#fbbf24;font-size:0.85rem;">+0.86</div>
+                    </div>
+                </div>
+                <ul style="font-size:0.79rem;color:#a8c0d6;list-style:none;padding:0;margin-top:0.7rem;line-height:1.75;">
+                    <li>📦 Energy ↔ Capacity: <strong style="color:#fbbf24;">r = +0.86</strong> (very strong)</li>
+                    <li>📈 Spearman: <strong>ρ = 0.85</strong> (robust, non-parametric confirms)</li>
+                    <li>📉 Regression: <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.78rem;">E = 162 + 16.8 × Cap</code></li>
+                    <li>📊 R² = <strong style="color:#34d399;">0.73</strong> — capacity explains 73% of variance</li>
+                    <li>🔍 Each fridge type forms its own cluster in scatter plot</li>
+                </ul>
+            </div>
+        </div>
+        <div class="reveal mt-4" style="background:linear-gradient(135deg,rgba(251,191,36,0.07),rgba(56,189,248,0.07));border:1px solid rgba(251,191,36,0.15);border-radius:10px;padding:0.8rem 1.2rem;">
+            <p style="font-size:0.8rem;color:#e8f1fa;">💡 <strong style="color:#fbbf24;">Key insight:</strong> For washers, water use and IMEF are the dominant drivers. For fridges, capacity alone explains most of the variance — but modern models deliver more cubic feet at lower kWh/yr, proving that efficiency improved independent of size.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 8: STAT INFERENCE ===== -->
+<div class="slide" data-slide="8">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:330px;height:330px;top:-70px;right:-70px;background:#c084fc;opacity:0.08;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-40px;background:#38bdf8;opacity:0.06;"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content">
+        <div class="reveal"><span class="chip" style="background:rgba(192,132,252,0.15);color:#c084fc;border:1px solid rgba(192,132,252,0.25);">Statistical Inference</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 mt-3 reveal">Confidence Intervals</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-2 gap-5 mt-3">
+            <div class="reveal" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);border-radius:14px;padding:1.2rem;">
+                <div style="font-size:0.85rem;font-weight:700;color:#38bdf8;margin-bottom:0.8rem;">👕 Washers — CI for Modern Mean</div>
+                <div style="text-align:center;margin:0.5rem 0;">
+                    <div style="font-size:0.7rem;color:#6a8fa8;letter-spacing:0.1em;text-transform:uppercase;">95% CI for µ_modern</div>
+                    <div style="font-size:2rem;font-weight:800;color:#38bdf8;margin:0.3rem 0;">[110.0, 115.4]</div>
+                    <div style="font-size:0.75rem;color:#a8c0d6;">kWh/yr · n = 171</div>
+                </div>
+                <ul style="font-size:0.8rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.75;margin-top:0.6rem;">
+                    <li>• Entire CI below older cohort mean (123.5)</li>
+                    <li>• 95% confident modern mean is ≤115.4 kWh/yr</li>
+                    <li>• CI for difference: [−0.5, +22.1] kWh/yr</li>
+                </ul>
+            </div>
+            <div class="reveal" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15);border-radius:14px;padding:1.2rem;">
+                <div style="font-size:0.85rem;font-weight:700;color:#34d399;margin-bottom:0.8rem;">🧊 Fridges — CI vs 1981 Baseline</div>
+                <div style="text-align:center;margin:0.5rem 0;">
+                    <div style="font-size:0.7rem;color:#6a8fa8;letter-spacing:0.1em;text-transform:uppercase;">95% CI for µ_modern</div>
+                    <div style="font-size:2rem;font-weight:800;color:#34d399;margin:0.3rem 0;">[384, 396]</div>
+                    <div style="font-size:0.75rem;color:#a8c0d6;">kWh/yr · n = 2 621</div>
+                </div>
+                <ul style="font-size:0.8rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.75;margin-top:0.6rem;">
+                    <li>• 1981 baseline = 1 278 kWh/yr</li>
+                    <li>• One-sample t vs 1 278 = −278, p ≈ 0</li>
+                    <li>• Modern fridges are <strong style="color:#34d399;">−69.5%</strong> below 1981</li>
+                </ul>
+            </div>
+        </div>
+        <div class="reveal mt-4" style="background:rgba(192,132,252,0.07);border:1px solid rgba(192,132,252,0.15);border-radius:10px;padding:0.8rem 1.2rem;">
+            <p style="font-size:0.8rem;color:#e8f1fa;">🔬 CLT applies: with n=171 (washers) and n=2621 (fridges), t-distribution CIs are valid even with right-skewed underlying distributions. Bootstrap CIs (1 000 resamples) confirm identical intervals.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 9: HYPOTHESIS TEST ===== -->
+<div class="slide" data-slide="9">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:350px;height:350px;top:-80px;right:-80px;background:#38bdf8;opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-50px;background:#c084fc;opacity:0.07;"></div>
+        <div class="blob" style="width:180px;height:180px;top:30%;left:8%;background:#34d399;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip" style="background:rgba(192,132,252,0.15);color:#c084fc;border:1px solid rgba(192,132,252,0.25);">Hypothesis Testing</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 mt-3 reveal">Main Hypothesis Test — Welch's t</h2>
+        <div class="divider-line reveal"></div>
+        <div class="reveal mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:0.8rem 1.2rem;font-size:0.82rem;color:#a8c0d6;">
+            <strong style="color:#c084fc;">H₀:</strong> µ_older = µ_modern &nbsp;|&nbsp; <strong style="color:#34d399;">H₁:</strong> µ_older > µ_modern (one-sided) &nbsp;|&nbsp; α = 0.05
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="reveal" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:14px;padding:1.1rem 1.3rem;">
+                <div style="font-size:0.82rem;font-weight:700;color:#38bdf8;margin-bottom:0.8rem;">👕 Clothes Washers</div>
+                <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.5rem;">
+                        <div style="font-size:1.3rem;font-weight:800;color:#38bdf8;">1.92</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">t stat</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.5rem;">
+                        <div style="font-size:1.3rem;font-weight:800;color:#a8c0d6;">65</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">df</div>
+                    </div>
+                    <div style="background:rgba(52,211,153,0.12);border-radius:8px;padding:0.5rem;border:1px solid rgba(52,211,153,0.25);">
+                        <div style="font-size:1.1rem;font-weight:800;color:#34d399;">0.030</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">p-value</div>
+                    </div>
+                </div>
+                <ul style="font-size:0.78rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.75;">
+                    <li>• Cohen's d = <strong>0.31</strong> (small-medium effect)</li>
+                    <li>• Mann-Whitney U: <strong style="color:#34d399;">p = 0.015</strong> ✓ confirms</li>
+                    <li style="color:#34d399;font-weight:600;">✅ Reject H₀ at α = 0.05</li>
+                </ul>
+            </div>
+            <div class="reveal" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);border-radius:14px;padding:1.1rem 1.3rem;">
+                <div style="font-size:0.82rem;font-weight:700;color:#34d399;margin-bottom:0.8rem;">🧊 Refrigerators</div>
+                <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.5rem;">
+                        <div style="font-size:1.3rem;font-weight:800;color:#34d399;">4.86</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">t stat</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.5rem;">
+                        <div style="font-size:1.3rem;font-weight:800;color:#a8c0d6;">632</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">df</div>
+                    </div>
+                    <div style="background:rgba(52,211,153,0.12);border-radius:8px;padding:0.5rem;border:1px solid rgba(52,211,153,0.25);">
+                        <div style="font-size:0.9rem;font-weight:800;color:#34d399;">7.5×10⁻⁷</div>
+                        <div style="font-size:0.66rem;color:#6a8fa8;text-transform:uppercase;">p-value</div>
+                    </div>
+                </div>
+                <ul style="font-size:0.78rem;color:#a8c0d6;list-style:none;padding:0;line-height:1.75;">
+                    <li>• Diff = <strong>42.4 kWh/yr</strong>; 95% CI [25, 60]</li>
+                    <li>• Mann-Whitney U: <strong style="color:#34d399;">p = 10⁻⁵</strong> ✓ confirms</li>
+                    <li style="color:#34d399;font-weight:600;">✅ Reject H₀ at α = 0.05</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 10: SECONDARY TESTS ===== -->
+<div class="slide" data-slide="10">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:310px;height:310px;top:-65px;right:-65px;background:#fbbf24;opacity:0.07;"></div>
+        <div class="blob" style="width:230px;height:230px;bottom:-50px;left:-40px;background:#38bdf8;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-gold mb-3">Secondary Tests</span></div>
+        <h2 class="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold mb-1 reveal">Additional Hypothesis Tests</h2>
+        <div class="divider-line reveal"></div>
+        <div class="grid grid-cols-2 gap-5 mt-3">
+            <div>
+                <div class="reveal" style="background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-left:3px solid #38bdf8;border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:0.9rem;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#38bdf8;margin-bottom:0.4rem;">👕 Washers: Front-Load vs Top-Load</div>
+                    <div style="font-size:0.79rem;color:#a8c0d6;line-height:1.7;">
+                        104 kWh/yr (F) vs 157 kWh/yr (T)<br>
+                        Welch's t = <strong style="color:#38bdf8;">12.0</strong>, p ≈ 10⁻²³<br>
+                        <span style="color:#34d399;">⇒ Load type is the strongest energy driver</span>
+                    </div>
+                </div>
+                <div class="reveal" style="background:rgba(192,132,252,0.05);border:1px solid rgba(192,132,252,0.15);border-left:3px solid #c084fc;border-radius:10px;padding:0.9rem 1.1rem;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#c084fc;margin-bottom:0.4rem;">👕 Washers: IMEF Between Eras</div>
+                    <div style="font-size:0.79rem;color:#a8c0d6;line-height:1.7;">
+                        IMEF older: 2.42 vs modern: 2.50<br>
+                        Welch's t: p = <strong style="color:#c084fc;">0.46</strong> — not significant<br>
+                        <span style="color:#fbbf24;">⇒ Energy gain from product mix, not IMEF</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="reveal" style="background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.15);border-left:3px solid #34d399;border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:0.9rem;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#34d399;margin-bottom:0.4rem;">🧊 Fridges: ANOVA Across 7 Types</div>
+                    <div style="font-size:0.79rem;color:#a8c0d6;line-height:1.7;">
+                        F = <strong style="color:#34d399;">1 351</strong>, p ≈ 0<br>
+                        Design type matters enormously<br>
+                        <span style="color:#38bdf8;">⇒ Type is a critical confounding variable</span>
+                    </div>
+                </div>
+                <div class="reveal" style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.15);border-left:3px solid #fbbf24;border-radius:10px;padding:0.9rem 1.1rem;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#fbbf24;margin-bottom:0.4rem;">🧊 Fridges: Bottom-Freezer vs Top-Freezer</div>
+                    <div style="font-size:0.79rem;color:#a8c0d6;line-height:1.7;">
+                        558 kWh/yr (BF) vs 362 kWh/yr (TF)<br>
+                        Welch's t = <strong style="color:#fbbf24;">45</strong>, p ≈ 10⁻²⁷⁷<br>
+                        <span style="color:#34d399;">⇒ Yet modern mix still lowered overall mean</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="reveal mt-4" style="background:linear-gradient(135deg,rgba(56,189,248,0.06),rgba(52,211,153,0.06));border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.7rem 1.2rem;">
+            <p style="font-size:0.8rem;color:#e8f1fa;">💡 Tech progress is beating adverse product-mix trends: even though modern fridges trend toward energy-hungry bottom-freezer models, total mean energy still fell 42 kWh/yr.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 11: CONCLUSIONS ===== -->
+<div class="slide" data-slide="11">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:380px;height:380px;top:-90px;right:-90px;background:#34d399;opacity:0.10;"></div>
+        <div class="blob" style="width:280px;height:280px;bottom:-70px;left:-50px;background:#38bdf8;opacity:0.08;"></div>
+        <div class="blob" style="width:180px;height:180px;top:40%;left:10%;background:#fbbf24;opacity:0.06;"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content">
+        <div class="reveal"><span class="chip chip-green mb-3">Conclusions</span></div>
+        <h2 class="font-display text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold mb-2 reveal">What the Data Tell Us</h2>
+        <div class="divider-line reveal"></div>
+        <div class="flex flex-col gap-3 mt-3">
+            <div class="reveal" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.18);border-radius:12px;padding:0.9rem 1.3rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.4rem;flex-shrink:0;">✅</span>
+                <div>
+                    <div style="font-weight:700;color:#34d399;margin-bottom:0.2rem;">Modern appliances DO consume significantly less energy</div>
+                    <div style="font-size:0.8rem;color:#a8c0d6;">Both t-tests reject H₀: washers −9% (p=0.030), fridges −10% cohort-vs-cohort (p=7.5×10⁻⁷), −70% vs 1981 baseline</div>
+                </div>
+            </div>
+            <div class="reveal" style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:0.9rem 1.3rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.4rem;flex-shrink:0;">🔑</span>
+                <div>
+                    <div style="font-weight:700;color:#38bdf8;margin-bottom:0.2rem;">Mechanisms differ by appliance type</div>
+                    <div style="font-size:0.8rem;color:#a8c0d6;">Washers: shift toward front-load + smaller drums (IMEF unchanged). Fridges: tech progress outpaces adverse product-mix drift</div>
+                </div>
+            </div>
+            <div class="reveal" style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.18);border-radius:12px;padding:0.9rem 1.3rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.4rem;flex-shrink:0;">⚡</span>
+                <div>
+                    <div style="font-weight:700;color:#fbbf24;margin-bottom:0.2rem;">Real-world impact: ~6.3 TWh/yr saved per decade</div>
+                    <div style="font-size:0.8rem;color:#a8c0d6;">42 kWh/yr difference × 150 M U.S. fridges alone. Standards (not marketing) are the primary driver</div>
+                </div>
+            </div>
+            <div class="reveal" style="background:rgba(192,132,252,0.07);border:1px solid rgba(192,132,252,0.18);border-radius:12px;padding:0.9rem 1.3rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.4rem;flex-shrink:0;">⚠️</span>
+                <div>
+                    <div style="font-weight:700;color:#c084fc;margin-bottom:0.2rem;">Limitations to keep in mind</div>
+                    <div style="font-size:0.8rem;color:#a8c0d6;">ENERGY STAR only = already efficient floor. Lab kWh ≠ real household use. Year cut-offs set empirically</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SLIDE 12: THANK YOU ===== -->
+<div class="slide" data-slide="12">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:540px;height:540px;top:-130px;right:-130px;background:#38bdf8;opacity:0.14;"></div>
+        <div class="blob" style="width:360px;height:360px;bottom:-100px;left:-80px;background:#34d399;opacity:0.12;"></div>
+        <div class="blob" style="width:250px;height:250px;top:40%;left:15%;background:#fbbf24;opacity:0.09;"></div>
+        <div class="blob" style="width:200px;height:200px;top:15%;left:38%;background:#c084fc;opacity:0.07;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content text-center">
+        <div style="font-size:90px;margin-bottom:0.8rem;animation:float 3s ease-in-out infinite;" class="reveal">🏆</div>
+        <h1 class="font-display text-[clamp(2.4rem,5.5vw,4rem)] font-black bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent tracking-tight mb-4 reveal">Thank You</h1>
+        <p class="text-[clamp(0.85rem,1.3vw,1.1rem)] font-light text-text-muted tracking-[5px] uppercase reveal mb-6">Group 1 · Applied Statistics · Universidad Europea · 2026</p>
+        <div class="grid grid-cols-3 gap-4 mt-6 reveal">
+            <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:0.9rem;">
+                <div style="font-size:1.6rem;font-weight:900;color:#38bdf8;" class="glow-pulse">−9%</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.07em;">Washers (p=0.030)</div>
+            </div>
+            <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:12px;padding:0.9rem;">
+                <div style="font-size:1.6rem;font-weight:900;color:#34d399;">−70%</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.07em;">Fridges vs 1981</div>
+            </div>
+            <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:0.9rem;">
+                <div style="font-size:1.6rem;font-weight:900;color:#fbbf24;">H₀ rejected</div>
+                <div style="font-size:0.72rem;color:#6a8fa8;text-transform:uppercase;letter-spacing:0.07em;">Both studies</div>
+            </div>
+        </div>
+        <p class="reveal mt-6" style="font-size:0.82rem;color:#6a8fa8;font-style:italic;">Data: EPA ENERGY STAR (bghd-e2wd, p5st-her9) · AHAM/DOE historical averages · Questions welcome</p>
+    </div>
+</div>
+
+</div><!-- .deck -->
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 12</span>
+</div>
+
+<script>
+    let current = 1;
+    const total = document.querySelectorAll('.slide').length;
+    const dotsContainer = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    for (let i = 1; i <= total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 1 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    }
+    function goToSlide(n) {
+        const prev = document.querySelector('.slide.active');
+        const next = document.querySelector('.slide[data-slide="' + n + '"]');
+        if (prev) prev.classList.remove('active');
+        if (next) { next.classList.add('active'); animateSlide(next); }
+        current = n; updateNav();
+    }
+    function changeSlide(dir) { let next = current + dir; if (next < 1) next = total; if (next > total) next = 1; goToSlide(next); }
+    function updateNav() {
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === current));
+        counter.textContent = current + ' / ' + total;
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); }
+    });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1); });
+
+    function animateSlide(slide) {
+        slide.querySelectorAll('.reveal').forEach((el, i) => {
+            el.style.transition = 'none';
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(18px)';
+            el.offsetHeight;
+            const delay = i * 0.075;
+            el.style.transition = 'opacity 0.38s ease ' + delay + 's, transform 0.38s ease ' + delay + 's';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0px)';
+        });
+        animateSlideEffects(slide);
+    }
+
+    function animateSlideEffects(slide) {
+        slide.querySelectorAll('[data-count]:not(.counted)').forEach(el => {
+            el.classList.add('counted');
+            const target = parseInt(el.dataset.count);
+            let cur = 0; const step = target / 45;
+            const timer = setInterval(() => { cur += step; if (cur >= target) { cur = target; clearInterval(timer); } el.textContent = Math.round(cur).toLocaleString(); }, 28);
+        });
+        slide.querySelectorAll('.bar-fill:not(.fill-init)').forEach((bar, i) => {
+            bar.classList.add('fill-init');
+            bar.style.width = '0%';
+            bar.style.transition = 'width 0.65s ease ' + (i * 0.1) + 's';
+            bar.offsetHeight;
+            bar.style.width = bar.dataset.width + '%';
+        });
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        const spotlight = document.querySelector('.mouse-spotlight');
+        if (spotlight) spotlight.style.background = 'radial-gradient(600px circle at ' + e.clientX + 'px ' + e.clientY + 'px, rgba(56,189,248,0.055), transparent 40%)';
+    });
+
+    window.initParticles = function(canvas, options) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+        const interactive = options.interactive !== false;
+        const count = options.count || (interactive ? 50 : 16);
+        let mx = -1000, my = -1000;
+        const particles = Array.from({length: count}, () => ({
+            x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+            size: Math.random()*2.2+0.7, alpha: Math.random()*0.3+0.1
+        }));
+        if (interactive) {
+            canvas.addEventListener('mousemove', (e) => { const r = canvas.getBoundingClientRect(); mx = e.clientX-r.left; my = e.clientY-r.top; });
+            canvas.addEventListener('mouseleave', () => { mx=-1000; my=-1000; });
+        }
+        (function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => {
+                if (interactive) { const dx=p.x-mx, dy=p.y-my, d=Math.sqrt(dx*dx+dy*dy); if(d<100){const f=(100-d)/100*2; p.vx+=(dx/d)*f*0.1; p.vy+=(dy/d)*f*0.1;} }
+                p.vx*=0.98; p.vy*=0.98; p.x+=p.vx; p.y+=p.vy;
+                if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+                if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+                ctx.fillStyle='rgba(56,189,248,'+p.alpha+')'; ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        })();
+    };
+    document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, {interactive:true, count:50}));
+    document.querySelectorAll('.particle-canvas-ambient').forEach(c => window.initParticles(c, {interactive:false, count:16}));
+
+    try { animateSlide(document.querySelector('.slide.active')); } catch(e) { console.warn(e); }
+</script>
+</body>
+</html>
